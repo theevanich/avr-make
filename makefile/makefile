@@ -8,20 +8,26 @@ TARGET = main
 # directories
 SRC = src
 INC = inc
+BIN = bin
 
 # device parameters
-DEVICE     = atmega644p
-CLOCK      = 12000000
-PROGRAMMER = usbasp
-LFUSE      = 0xff
-HFUSE      = 0x9c
-EFUSE      = 0xff
+DEVICE     = attiny85
+CLOCK      = 8000000
+PROGRAMMER = dragon_isp
+LFUSE      = 0xE2
+HFUSE      = 0xD5
+EFUSE      = 0xfE
 
 # compilers
 CC      = avr-gcc
 OBJCOPY = avr-objcopy
 AVRDUDE = avrdude -c $(PROGRAMMER) -p $(DEVICE)
 CFLAGS  = -mmcu=$(DEVICE) -Os -Wall -std=c99 -DF_CPU=$(CLOCK) -I $(INC)/
+RM = @rm
+
+ifeq ($(OS),Windows_NT)
+	RM = del
+endif
 
 #--------------------------------------
 # No need to edit the below code
@@ -49,7 +55,8 @@ Makefile.deps: $(SOURCES)
 
 # remove build files
 clean:
-	@rm src/*.o $(TARGET).elf $(TARGET).hex Makefile.deps
+	@echo deleting $(wildcard $(SRC)/*.o) $(TARGET).elf $(TARGET).hex Makefile.deps
+	$(RM) $(TARGET).elf $(TARGET).hex Makefile.deps
 
 # flash to micro-controller
 flash: $(TARGET).hex
